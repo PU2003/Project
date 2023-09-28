@@ -5,12 +5,19 @@ import ValidatedTextInput from '../../../../components/ValidatedInput/ValidatedT
 import { countryCodeDropDown } from '../utils/RegisterModalUtil'
 import { validatePhone } from '../../../../services/Validators'
 import { StyledNextButton } from '../RegisterNextButton/RegisterNextButton'
+import { useDispatch,useSelector } from 'react-redux'
+import { AppDispatch,RootState } from '../../../../redux/Store'
+import { updateUserPhone } from '../../../../redux/slice/RegisterSlice'
 
 export const RegisterFormFour:React.FC = () => {
+
+   const state = useSelector((state:RootState) => state.register);
 
    const [phoneCode,setPhoneCode] = useState<string>("+1")
    const [phoneNumber,setPhoneNumber] = useState<string>("");
    const [validNumber,setValidNumber] = useState<boolean>(true);
+
+   const dispatch:AppDispatch = useDispatch();
 
    const changeCode = (e:React.ChangeEvent<HTMLSelectElement>) => {
       setPhoneCode(e.target.value.split(" ")[0]);
@@ -20,11 +27,19 @@ export const RegisterFormFour:React.FC = () => {
       setPhoneNumber(e.target.value);
    }
 
+   const sendPhoneNumber = () => {
+      dispatch(updateUserPhone({
+         username:state.username,
+         phone:phoneNumber
+      }))
+   }
+
    useEffect(() => {
       console.log(phoneCode,phoneNumber);
       if(phoneNumber){
          setValidNumber(validatePhone(phoneNumber));
       }
+      console.log(state);
    },[phoneCode,phoneNumber])
 
   return (
@@ -63,7 +78,7 @@ export const RegisterFormFour:React.FC = () => {
                disabled={(phoneNumber && validNumber) ? false:true}
                color={'black'}
                active={(phoneNumber && validNumber) ? true:false}
-               onClick={()=>console.log("update phone on db")}          
+               onClick={sendPhoneNumber}          
             >UpdateNumber</StyledNextButton>
 
         </div>
